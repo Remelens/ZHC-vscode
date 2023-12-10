@@ -2,9 +2,9 @@
   "name": "zhangchat",
   "displayName": "ZhangChat",
   "description": "ZhangChat in VSCode. 摸鱼聊天工具",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher":"remelens",
-  "icon": "zhc.ico",
+  "icon": "zhc.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Remelens/ZHC-vscode"
