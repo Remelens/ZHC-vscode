@@ -42,6 +42,15 @@ function activate(context) {
 		chat.sendMessage(texts);
 	})
 	context.subscriptions.push(zhcsend);
+	//send
+	let zhcwel = vscode.commands.registerCommand("zhangchat.welcome",async function(){
+		if(!onchat){
+			vscode.window.showErrorMessage('您未加入频道!');
+			return;
+		}
+		chat.sendMessage(random_welcome());
+	})
+	context.subscriptions.push(zhcwel);
 	//close
 	let zhcclose = vscode.commands.registerCommand("zhangchat.close",async function(){
 		if(!onchat){
@@ -109,7 +118,14 @@ Ta正在使用 ${data.client}`);
 		close:close
   	};
 }
-
+function random_welcome(){
+	const greetings = ["uwu!", "awa!", "来了老弟!", "hi yo","qwq","这是欢迎语.jpg"];
+	for(let i=0;i<Math.floor(Math.random() * 6);i++){
+		greetings[3]+='o';
+	}
+	const randomIndex = Math.floor(Math.random() * greetings.length);
+	return greetings[randomIndex];
+}
 module.exports = {
 	activate,
 	deactivate

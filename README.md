@@ -33,7 +33,7 @@ XChat基于HackChat，HackChat的GitHub仓库地址为：https://github.com/hack
 ---
 友情链接：  
 [HackChat聊天室](https://hack.chat/)  
-[hackchat\+\+客户端](https://hc.thz.cool/)  
+[hackchat++客户端](https://hc.thz.cool/)  
 [IM模式客户端（By @Dr0）](https://im.chat.zhangsoft.link/)  
 [ZhangChat增强脚本](https://greasyfork.org/zh-CN/scripts/458989-zhchat%E5%A2%9E%E5%BC%BA%E8%84%9A%E6%9C%AC)
 

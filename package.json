@@ -2,7 +2,9 @@
   "name": "zhangchat",
   "displayName": "ZhangChat",
   "description": "ZhangChat in VSCode. 摸鱼聊天工具",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "publisher":"remelens",
+  "icon": "zhc.ico",
   "repository": {
     "type": "git",
     "url": "https://github.com/Remelens/ZHC-vscode"
@@ -26,11 +28,14 @@
         "title": "ZhangChat:Send Message"
       },
       {
+        "command": "zhangchat.welcome",
+        "title": "ZhangChat:Send Welcome Message"
+      },
+      {
         "command": "zhangchat.close",
         "title": "ZhangChat:Close"
       }
-    ],
-    "icon": "zhc.ico"
+    ]
   },
   "scripts": {
     "lint": "eslint .",
