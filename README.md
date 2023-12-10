@@ -39,4 +39,3 @@ XChat基于HackChat，HackChat的GitHub仓库地址为：https://github.com/hack
 
 ---
 2023.02.23~2023.03.26 [小张聊天室开发组](https://githubfast.com/ZhangChat-Dev-Group) 致  
-**本站由[雨云](https://www.rainyun.com/MjcxMTc=_)提供计算服务**
