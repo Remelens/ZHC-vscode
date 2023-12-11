@@ -2,7 +2,7 @@
   "name": "zhangchat",
   "displayName": "ZhangChat",
   "description": "ZhangChat in VSCode. 摸鱼聊天工具",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "publisher":"remelens",
   "icon": "zhc.png",
   "repository": {
@@ -34,8 +34,46 @@
       {
         "command": "zhangchat.close",
         "title": "ZhangChat:Close"
+      },
+      {
+        "command": "zhangchat.close.emergency",
+        "title": "ZhangChat:Emergency Close"
+      },
+      {
+        "command": "zhangchat.noinfo",
+        "title": "ZhangChat:Notice [on/off]"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "zhangchat.close.emergency",
+        "key": "ctrl+alt+e"
+      },
+      {
+        "command": "zhangchat.send",
+        "key": "ctrl+alt+p"
+      },
+      {
+        "command": "zhangchat.noinfo",
+        "key": "ctrl+alt+n"
+      }
+    ],
+    "configuration": {
+      "title": "ZhangChat",
+      "properties": {
+          "zhangchat.tunnel.select": {
+              "type": "string",
+              "default": "Cloudflare Tunnel (Default)",
+              "enum": ["Cloudflare Tunnel (Default)", "RainCDN Tunnel","Custom URL"],
+              "description": "Connect tunnels(Websocket address for connecting the chatroom)"
+          },
+          "zhangchat.tunnel.WebsocketAddress": {
+              "type": "string",
+              "default": "wss://",
+              "description": "Custom websocket connecting address(select 'Custom URL' in 'tunnel>select')"
+          }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

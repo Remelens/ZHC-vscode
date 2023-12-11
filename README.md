@@ -1,6 +1,7 @@
 # 小张聊天室VSCode插件版
 
----
+## 简介
+
 欢迎使用小张聊天室vscode插件，聊天室原站见 https://chat.zhangsoft.link/ 。  
 注意：在这里，我们把"房间（chatroom）"称作"频道（channel）"。  
 调用`zhangchat.join`命令以加入频道。  
@@ -20,7 +21,18 @@ XChat基于HackChat，HackChat的GitHub仓库地址为：https://github.com/hack
 小张聊天室的仓库地址为：https://github.com/ZhangChat-Dev-Group/ZhangChat  
 在此对HackChat的开发者深表感谢。
 
----
+## 使用方法
+
+`ctrl`+`shift`+`p`,搜索`zhangchat`即可找到相关命令。
+
+`ctrl`+`alt`+`p`发送信息（没有加入频道时自动询问）
+
+`ctrl`+`alt`+`e`紧急退出，`ctrl`+`alt`+`n`开启/关闭免打扰（摸鱼快捷键）
+
+插件允许设置连接隧道
+
+## 其他
+
 本聊天室开发者：  
 @MrZhang365 - [MrZhang365的博客](https://blog.zhangsoft.link/) && [小张软件](https://www.zhangsoft.link/)  
 @paperee - [纸片君ee的博客](https://blog.paperee.guru/)

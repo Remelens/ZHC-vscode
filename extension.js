@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const WebSocket = require("ws");
-let chat,onchat=false;
+let chat,onchat=false,noinfo=false;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -21,10 +21,21 @@ function activate(context) {
 		let channel=await vscode.window.showInputBox({ prompt: '请输入加入频道' }).then(keyword => {
 			return keyword;
 		});
+		if(!channel){return;}
 		let username=await vscode.window.showInputBox({ prompt: '请输入用户名' }).then(keyword => {
 			return keyword;
 		});
-		chat = zhc(channel, username);
+		if(!username){return;}
+		let config=vscode.workspace.getConfiguration("zhangchat");
+		let wsurl='wss://chat.zhangsoft.link/ws';
+		if(config.tunnel.select==="Cloudflare Tunnel (Default)"){
+			wsurl='wss://chat.zhangsoft.link/ws';
+		}else if(config.tunnel.select==="RainCDN Tunnel"){
+			wsurl='wss://rain.chat.zhangsoft.link/ws';
+		}else if(config.tunnel.select==="Custom URL"){
+			wsurl=config.tunnel.WebsocketAddress;
+		}
+		chat = zhc(channel, username,wsurl);
 		onchat=true;
 	})
 	context.subscriptions.push(zhcjoin);
@@ -37,6 +48,7 @@ function activate(context) {
 		let texts=await vscode.window.showInputBox({ prompt: '发送消息：' }).then(keyword => {
 			return keyword;
 		});
+		if(!texts){return;}
 		chat.sendMessage(texts);
 	})
 	context.subscriptions.push(zhcsend);
@@ -58,17 +70,40 @@ function activate(context) {
 		chat.close();
 	})
 	context.subscriptions.push(zhcclose);
+	//emergency close
+	let zhceclose = vscode.commands.registerCommand("zhangchat.close.emergency",async function(){
+		await vscode.commands.executeCommand('notifications.clearAll');
+		if(!onchat){
+			return;
+		}
+		noinfo=true;
+		chat.close();
+		//notifications.clearAll
+	})
+	context.subscriptions.push(zhceclose);
+	//no info mode
+	let zhcnoinfo = vscode.commands.registerCommand("zhangchat.noinfo",async function(){
+		if(noinfo){
+			noinfo=false;
+			vscode.window.showInformationMessage(`已取消免打扰模式`);
+		}else{
+			noinfo=true;
+			await vscode.commands.executeCommand('notifications.clearAll');
+		}
+	})
+	context.subscriptions.push(zhcnoinfo);
 }
 
 // 当您的扩展被停用时，将调用此方法
 function deactivate() {}
 
-function zhc(channel, myNick) {
-	const ws = new WebSocket('wss://chat.zhangsoft.link/ws');
+function zhc(channel, myNick,wsurl) {
+	const ws = new WebSocket(wsurl);
   	ws.on('open', function() {
 	    ws.send(JSON.stringify({ cmd: 'join', channel: channel, nick: myNick, client: 'ZHCvscode' }));
   	});
   	ws.onmessage=function(event) {
+		if(noinfo){return;}
     	var data=JSON.parse(event.data);
 		data.trip=(!data.trip?'NULL':data.trip);
 		if(data.cmd==="onlineSet"){
@@ -81,20 +116,27 @@ function zhc(channel, myNick) {
 			}
 			vscode.window.showInformationMessage(`在线用户: ${res}`);
 		}else if(data.cmd==="onlineRemove"){
-			vscode.window.showInformationMessage(`${data.nick} 离开了聊天室`);
+			vscode.window.showInformationMessage(`${data.nick} ${random_left()}了聊天室`);
 		}else if(data.cmd==="onlineAdd"){
-			vscode.window.showInformationMessage(`${data.nick}#${data.trip} 加入了聊天室
+			vscode.window.showInformationMessage(`[${data.trip}] ${random_join(data.nick)}
+
 Ta正在使用 ${data.client}`);
 		}else if(data.cmd==="chat"){
-			vscode.window.showInformationMessage(`${data.nick}#${data.trip}:${data.text}`);
+			vscode.window.showInformationMessage(`[${data.trip}] ${data.nick}: ${data.text}`);
 		}else if(data.cmd==="info"){
-			vscode.window.showInformationMessage(`提示${(!data.nick?'':"#"+data.nick)}:${data.text}`);
+			vscode.window.showInformationMessage(`${(!data.trip?'':"["+data.trip+"] ")}提示: ${data.text}`);
+		}else if(data.cmd==="warn"){
+			vscode.window.showWarningMessage(`ZhangChat: ${data.text}`);
 		}else{
 			//console.log(event.data);//debug
 		}
   	}
   	ws.on('close', function() {
 		onchat=false;
+		if(noinfo){
+			noinfo=false;
+			return;
+		}
     	vscode.window.showInformationMessage(`ZhangChat断开连接`);
   	});
   	function sendMessage(text) {
@@ -123,6 +165,18 @@ function random_welcome(){
 	}
 	const randomIndex = Math.floor(Math.random() * greetings.length);
 	return greetings[randomIndex];
+}
+function random_join(uname){
+	let t1=['活蹦乱跳','可爱','美丽','快乐','活泼','美味'];
+	let t2 = ["误入","闯入","跳进","飞进","滚进","掉进"];
+	let r1 = Math.floor(Math.random() * t1.length);
+	let r2 = Math.floor(Math.random() * t2.length);
+	return t1[r1]+'的 '+uname+' '+t2[r2]+'了聊天室';
+}
+function random_left(){
+	let t = ["跳出","飞出","滚出","掉出","扭出","瞬移出"]
+	let randomIndex = Math.floor(Math.random() * t.length);
+	return t[randomIndex];
 }
 module.exports = {
 	activate,

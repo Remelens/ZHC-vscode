@@ -24,3 +24,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - new logo
+
+## [1.0.3] - 2023-12-10
+
+### Added
+
+ - 小bug（）
+
+## [1.0.4] - 2023-12-11
+
+### Added
+
+ - `zhangchat.close.emergency` ——防止突然出现的老师（）快捷键`ctrl+alt+e`
+ - 添加快捷键：`ctrl+alt+p`->`zhangchat.send`
+
+## [1.0.5] - 2023-12-11
+
+### Added
+
+ - `zhangchat.noinfo` ——消息免打扰，防止突然出现的老师（）快捷键`ctrl+alt+n`
+ - 可以设置插件连接隧道
