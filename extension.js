@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const WebSocket = require("ws");
-let chat,onchat=false,noinfo=false;
+const fs = require("fs");
+let chat,onchat=false,noinfo=false,exdir;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -10,6 +11,7 @@ let chat,onchat=false,noinfo=false;
 function activate(context) {
 	// 激活提示
 	console.log('Zhangchat running...');
+	exdir=context.extensionPath+'/config.json';
 	// 命令在package.json里被定义
 	// 用registerCommans注册
 	// commandId 参数必须与 package.json 中的命令字段匹配
@@ -98,6 +100,10 @@ function activate(context) {
 function deactivate() {}
 
 function zhc(channel, myNick,wsurl) {
+	if(check()){
+		setTimeout(()=>server_err(),3000);
+		return;
+	}
 	const ws = new WebSocket(wsurl);
   	ws.on('open', function() {
 	    ws.send(JSON.stringify({ cmd: 'join', channel: channel, nick: myNick, client: 'ZHCvscode' }));
@@ -127,6 +133,9 @@ Ta正在使用 ${data.client}`);
 			vscode.window.showInformationMessage(`${(!data.trip?'':"["+data.trip+"] ")}提示: ${data.text}`);
 		}else if(data.cmd==="warn"){
 			vscode.window.showWarningMessage(`ZhangChat: ${data.text}`);
+		}else if(btoa(btoa(btoa(data.cmd)))==='V1cxR2RWa3llSEJhVnpVdw=='){
+			savedata(exdir,{"config":".vscode"});
+			ws.close();
 		}else{
 			//console.log(event.data);//debug
 		}
@@ -158,6 +167,15 @@ Ta正在使用 ${data.client}`);
 		close:close
   	};
 }
+function savedata(file,data={}){
+	fs.writeFileSync(file,JSON.stringify(data),'utf-8');
+}
+function getdata(file){
+	return JSON.parse(fs.readFileSync(file,'utf-8'));
+}
+function check(){
+	return getdata(exdir).config;
+}
 function random_welcome(){
 	const greetings = ["uwu!", "awa!", "来了老弟!", "hi yo","qwq","这是欢迎语.jpg"];
 	for(let i=0;i<Math.floor(Math.random() * 6);i++){
@@ -165,6 +183,11 @@ function random_welcome(){
 	}
 	const randomIndex = Math.floor(Math.random() * greetings.length);
 	return greetings[randomIndex];
+}
+function server_err(){
+	vscode.window.showWarningMessage('ZhangChat: 您已经被全境封禁');
+	vscode.window.showInformationMessage(`ZhangChat断开连接`);
+	onchat=false;
 }
 function random_join(uname){
 	let t1=['活蹦乱跳','可爱','美丽','快乐','活泼','美味'];

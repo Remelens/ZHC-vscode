@@ -2,7 +2,7 @@
   "name": "zhangchat",
   "displayName": "ZhangChat",
   "description": "ZhangChat in VSCode. 摸鱼聊天工具",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "publisher":"remelens",
   "icon": "zhc.png",
   "repository": {
