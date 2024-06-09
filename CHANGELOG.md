@@ -44,3 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - `zhangchat.noinfo` ——消息免打扰，防止突然出现的老师（）快捷键`ctrl+alt+n`
  - 可以设置插件连接隧道
+
+## [1.0.7] - 2024-06-09
+
+### Changed
+
+ - ws通道

